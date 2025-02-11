@@ -1,0 +1,21 @@
+library(pheatmap)
+
+# Extract normalized counts
+norm_counts <- assay(rlog(dds))
+topGenes <- head(order(res$padj), 50)  # Top 50 differentially expressed genes
+
+# Generate heatmap
+pheatmap(norm_counts[topGenes, ], cluster_rows=TRUE, show_rownames=TRUE)
+
+
+
+library(ggplot2)
+
+res_df <- as.data.frame(res)
+res_df$Significance <- ifelse(res_df$padj < 0.05, "Significant", "Not Significant")
+
+ggplot(res_df, aes(x=log2FoldChange, y=-log10(padj), color=Significance)) +
+    geom_point(alpha=0.8) +
+    scale_color_manual(values=c("red", "gray")) +
+    theme_minimal() +
+    labs(title="Volcano Plot", x="Log2 Fold Change", y="-Log10 Adjusted P-value")

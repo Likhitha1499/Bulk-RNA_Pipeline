@@ -1,0 +1,16 @@
+library(DESeq2)
+
+# Load count matrix
+countData <- read.table("counts.txt", header=TRUE, row.names=1)
+colData <- data.frame(condition=factor(c("control", "treated")))
+dds <- DESeqDataSetFromMatrix(countData, colData, ~ condition)
+
+# Run DESeq2
+dds <- DESeq(dds)
+res <- results(dds)
+
+# Filter significant genes (adjusted p-value < 0.05)
+res_sig <- subset(res, padj < 0.05)
+
+# Save results
+write.csv(res_sig, "DEG_results.csv")
